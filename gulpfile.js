@@ -2,7 +2,6 @@ const devFolder = 'dev';
 const distFolder = 'dist';
 const srcFolder = 'src';
 
-const fs = require('fs');
 
 const path = {
   dev: {
@@ -33,7 +32,7 @@ const path = {
   watch: {
     pug: srcFolder + '/pug/*.pug',
     html: srcFolder + '/**/*.html',
-    css: srcFolder + '/styles/style.scss',
+    css: srcFolder + '/styles/**/*.scss',
     js: srcFolder + '/js/**/*.js',
     img: srcFolder + '/img/**/*.{jpg, jpeg, png, svg, gif, ico, webp}',
     svg: srcFolder + '/img/svg/*.svg',
@@ -46,6 +45,7 @@ const {
   dest
 } = require('gulp');
 const gulp = require('gulp');
+const fs = require('fs');
 const browserSync = require('browser-sync').create();
 const htmlMin = require('gulp-htmlmin');
 const del = require('del');
@@ -99,7 +99,7 @@ const htmlMinify = () => {
     .pipe(htmlMin({
       collapseWhitespace: true,
     }))
-    .pipe(dest(pas.dist.html))
+    .pipe(dest(path.dist.html))
 }
 const htmlMinifyDev = () => {
   return src(path.src.html)
@@ -116,13 +116,8 @@ const htmlMinifyDev = () => {
 const styles = () => {
   return src(path.src.css)
     // .pipe(concat('style.scss'))
-    .pipe(scss({
-      outputStyle: 'expanded',
-    }))
-    .pipe()
-    .pipe(autoprefixer({
-      cascade: false,
-    }))
+    .pipe(scss())
+    .pipe(autoprefixer())
     .pipe(cleanCss({
       level: 2,
     }))
@@ -186,7 +181,7 @@ const images = () => {
     .pipe(webp({
       quality: 70,
     }))
-    .pipe(dest(path.dest.img))
+    .pipe(dest(path.dist.img))
     .pipe(src(path.src.img))
     .pipe(imageMin({
       progressive: true,
@@ -217,6 +212,16 @@ const imagesDev = () => {
     .pipe(browserSync.stream())
 }
 
+
+// SVG mapdote
+const svgMapdote = () => {
+  return src('src/img/contacts/*.svg')
+    .pipe(dest('dist/img/contacts/'))
+}
+const svgMapdoteDev = () => {
+  return src('src/img/contacts/*.svg')
+    .pipe(dest('dev/img/contacts/'))
+}
 
 // SVG SPRITES
 const svgSpritesDev = () => {
@@ -304,8 +309,8 @@ const watchFiles = (opts) => {
   gulp.watch([path.watch.svg], svgSpritesDev);
 }
 
-const dev = gulp.series(cleanDev,  htmlMinifyDev, gulp.parallel(pug2htmlDev, imagesDev, svgSpritesDev, scriptsDev, stylesDev, fontsDev,));
-const build = gulp.series(cleanDist, htmlMinify, styles, scripts, svgSprites, images, pug2html, fonts);
+const dev = gulp.series(cleanDev,  htmlMinifyDev, gulp.parallel(pug2htmlDev, imagesDev, svgSpritesDev, scriptsDev, stylesDev, fontsDev, svgMapdoteDev));
+const build = gulp.series(cleanDist, htmlMinify, styles, scripts, svgSprites, images, pug2html, fonts, svgMapdote);
 const watch = gulp.parallel(dev, watchFiles, watchFilesBrowserSync);
 
 // exports.fontsStyleDev = fontsStyleDev;

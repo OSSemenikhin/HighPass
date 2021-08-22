@@ -14,10 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
         controls: [],
     });
 
-    var myPlacemark = new ymaps.Placemark([55.758338081927846, 37.601089758877414], {}, {
+    var myPlacemark = new ymaps.Placemark([55.769597545075555,37.63994845785387], {}, {
         iconLayout: 'default#image',
-        iconImageHref: 'img/mapdote.svg',
-        iconImageSize: [20, 20],
+        iconImageHref: 'img/contacts/mapdote.svg',
+        iconImageSize: [12, 12],
     });
 
     myMap.geoObjects.add(myPlacemark);
